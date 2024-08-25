@@ -83,7 +83,7 @@ def process_images(
     images = [
         normalize(image=image, mean=image_mean, std=image_std) for image in images
     ]
-    # [H, W, C] -> [C, H, W]
+    # [B, H, W, C] -> [B, C, H, W]
     images = [image.transpose(2, 0, 1) for image in images]
     return images
 
@@ -139,7 +139,6 @@ class PaliGemmaProcessor:
         pixel_values = torch.tensor(pixel_values)
 
         # prepend the image token to the text
-
         input_strings = [
             add_image_tokens_to_text(
                 prefix_prompt=prompt,
@@ -150,7 +149,7 @@ class PaliGemmaProcessor:
             for prompt in texts
         ]
 
-        # tokenize the input
+        # return the inputs_id and attention_mask as Pytorch tensors
         inputs = self.tokenizer(
             input_strings, padding=padding, truncation=truncation, return_tensors="pt"
         )
